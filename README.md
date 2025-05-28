@@ -1,28 +1,36 @@
-# 📦 Warehouse Location Utilization Forecasting (LSTM-Based)
-
+# 📦 Warehouse Utilization Forecasting
 > **🔒 Disclaimer**
 > This is just a sample of my work does not reflect the full functionality or scale of the internal version deployed at Loeb Electric.
 
-This project implements a **sequence-based LSTM model** to forecast the **daily warehouse location utilization** over the next 30 days. Specifically, it predicts the number of **full locations per product and location type** (e.g., small, medium, large, oversized) using historical inventory movements and order activity.
+This project forecasts **daily warehouse location utilization** for the next 30 days by analyzing committed inbound/outbound orders, historical inventory movements, and order behavior patterns such as lead times and the likelihood of new orders. The output includes the predicted number of **full storage locations**, segmented by location type:
+
+- **Small** (Carton)  
+- **Medium** (2X Carton)  
+- **Large** (Pallet)  
+- **Oversized** (Yard)
+
+This enables proactive planning of warehouse space, slotting, and labor allocation.
 
 ---
 
 ## 🧠 What It Does
 
-- Models inventory dynamics per product-location category pair.
-- Predicts 30-day outlook for **location fullness**, enabling forward planning.
-- Encodes the slotting and replenishment logic used in warehouse operations:
-  - Inbound material is slotted into primary locations first, then closest empty.
-  - Picking is done from primary locations first, and replenished from overflow.
-- Feeds results into a Power BI dataflow.
+- Simulates inventory flow by product-location type across time.
+- Predicts the number of **full locations** per category for the next 30 days.
+- Implements warehouse slotting and replenishment rules:
+  - Inbound products go to the **primary location** first, then nearest available.
+  - Outbound picks are fulfilled from **primary locations** and replenished from overflow.
+- Integrates directly with **Power BI Dataflows**:
+  - **Reads** historical and forecast inputs.
+  - **Writes** daily utilization forecasts back to Power BI for reporting.
 
 ---
 
 ## 🛠️ How It Works
 
-1. **LSTM sequence model** trained on 3 years of history per product.
-2. Forecasts **next 30 days** of full locations per category.
-3. Results are exported to a **Power BI Dataflow** and joined with other warehouse KPIs.
+1. **Historical Analysis**: Processes 5 years of inventory and order history per product.
+2. **Forecasting**: Estimates daily location occupancy per category based on projected order activity and restocking logic.
+3. **Data Integration**: Exports forecast data into a **Power BI Dataflow**, enabling dynamic reporting alongside other warehouse KPIs (e.g., product turnover, slot utilization, travel minimization opportunities).
 
 ---
 
@@ -53,33 +61,5 @@ The model output is loaded into a **Power BI Dataflow**, where it's enriched and
 ![alt text](https://github.com/AyubSherif/WarehouseUtilization/blob/main/img/WarehouseUtilizationReport.png)
 
 ![alt text](https://github.com/AyubSherif/WarehouseUtilization/blob/main/img/AisleView.png)
-
----
-
-## 🧪 Model Architecture
-
-- **Model**: LSTM (PyTorch)
-- **Input**: 3 years sequences of `[on_hand_qty, incoming_qty, outgoing_qty]`
-- **Output**: 30-day sequence of `location_full` count  
-
----
-
-## 🧭 Future Work
-
-- Due to some Power BI limitations, I am currently working on another interactive too powered by plotly library (Python package)
-- See [WarehouseManagementAppDemo](https://github.com/AyubSherif/WarehouseManagementAppDemo/) repository
-
----
-
-## 📌 Requirements
-
-- Python 3.8+
-- PyTorch
-- Pandas, NumPy, Matplotlib
-
-Install with:
-
-```bash
-pip install torch pandas numpy matplotlib
 
 
